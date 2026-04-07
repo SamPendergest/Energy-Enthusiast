@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World - Dark Mode Test</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #6200ee;
+            --container-bg: #f9f9f9;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --accent-color: #bb86fc;
+            --container-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .card {
+            background-color: var(--container-bg);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transition: background-color 0.3s;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+        }
+
+        .toggle-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .toggle-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .toggle-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Hello World</h1>
+        <p>GitHub Pages deployment test with interactive features.</p>
+        <button class="toggle-btn" id="themeToggle">Switch to Dark Mode</button>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            
+            if (isDark) {
+                body.removeAttribute('data-theme');
+                themeToggle.textContent = 'Switch to Dark Mode';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = 'Switch to Light Mode';
+            }
+        });
+    </script>
+</body>
+</html>
