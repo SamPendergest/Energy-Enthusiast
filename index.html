@@ -176,19 +176,19 @@
             <div class="sliders">
                 <div class="slider-box">
                     <label>Can Design: <span id="v1">5</span></label>
-                    <input type="range" id="s1" min="1" max="10" value="5" oninput="updateVal(1)">
+                    <input type="range" id="s1" min="1" max="10" value="5" step="0.1" oninput="updateVal(1)">
                 </div>
                 <div class="slider-box">
                     <label>Flavor Accuracy: <span id="v2">5</span></label>
-                    <input type="range" id="s2" min="1" max="10" value="5" oninput="updateVal(2)">
+                    <input type="range" id="s2" min="1" max="10" value="5" step="0.1" oninput="updateVal(2)">
                 </div>
                 <div class="slider-box">
                     <label>Overall Flavor: <span id="v3">5</span></label>
-                    <input type="range" id="s3" min="1" max="10" value="5" oninput="updateVal(3)">
+                    <input type="range" id="s3" min="1" max="10" value="5" step="0.1" oninput="updateVal(3)">
                 </div>
                 <div class="slider-box">
                     <label>Overall Rating: <span id="v4">5</span></label>
-                    <input type="range" id="s4" min="1" max="10" value="5" oninput="updateVal(4)">
+                    <input type="range" id="s4" min="1" max="10" value="5" step="0.1" oninput="updateVal(4)">
                 </div>
             </div>
 
@@ -255,10 +255,10 @@
                 brand: document.getElementById('brand').value,
                 img: document.getElementById('imgUrl').value || 'https://via.placeholder.com/250x200?text=No+Image',
                 scores: [
-                    parseInt(document.getElementById('s1').value),
-                    parseInt(document.getElementById('s2').value),
-                    parseInt(document.getElementById('s3').value),
-                    parseInt(document.getElementById('s4').value)
+                    parseFloat(document.getElementById('s1').value),
+                    parseFloat(document.getElementById('s2').value),
+                    parseFloat(document.getElementById('s3').value),
+                    parseFloat(document.getElementById('s4').value)
                 ]
             };
 
