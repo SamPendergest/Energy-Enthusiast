@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Drink Vault</title>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --text: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        input[type="text"], 
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #2a2a2a;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .rating-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .list-container {
+            margin-top: 2rem;
+        }
+
+        .drink-card {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .rating-badge {
+            background: var(--primary);
+            color: #000;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Drink Vault</h1>
+        
+        <div class="input-group">
+            <label for="drinkName">Drink Name</label>
+            <input type="text" id="drinkName" placeholder="e.g. Monster Ultra White">
+        </div>
+
+        <div class="input-group">
+            <label for="caffeine">Caffeine (mg)</label>
+            <input type="number" id="caffeine" placeholder="e.g. 160">
+        </div>
+
+        <div class="input-group">
+            <label>Rating: <span id="ratingVal">5</span>/10</label>
+            <input type="range" id="rating" min="1" max="10" value="5" class="rating-slider">
+        </div>
+
+        <button onclick="addDrink()">Log Drink</button>
+
+        <div class="list-container" id="drinkList">
+            <!-- Drinks will appear here -->
+        </div>
+    </div>
+
+    <script>
+        const ratingSlider = document.getElementById('rating');
+        const ratingVal = document.getElementById('ratingVal');
+        
+        // Update the display value for the slider
+        ratingSlider.addEventListener('input', () => {
+            ratingVal.textContent = ratingSlider.value;
+        });
+
+        function addDrink() {
+            const name = document.getElementById('drinkName').value;
+            const caffeine = document.getElementById('caffeine').value;
+            const rating = document.getElementById('rating').value;
+
+            if (!name) {
+                alert("Please enter a drink name!");
+                return;
+            }
+
+            const list = document.getElementById('drinkList');
+            const card = document.createElement('div');
+            card.className = 'drink-card';
+            
+            card.innerHTML = `
+                <div>
+                    <strong>${name}</strong><br>
+                    <small>${caffeine}mg caffeine</small>
+                </div>
+                <div class="rating-badge">${rating}/10</div>
+            `;
+
+            list.prepend(card);
+
+            // Clear inputs
+            document.getElementById('drinkName').value = '';
+            document.getElementById('caffeine').value = '';
+            document.getElementById('rating').value = 5;
+            ratingVal.textContent = 5;
+        }
+    </script>
+</body>
+</html>
