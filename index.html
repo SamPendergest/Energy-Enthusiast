@@ -3,95 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World - Dark Mode Test</title>
+    <title>Energy Drink Vault</title>
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --accent-color: #6200ee;
-            --container-bg: #f9f9f9;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --accent-color: #bb86fc;
-            --container-bg: #1e1e1e;
+            --primary: #00ff88;
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --text: #e0e0e0;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--text);
             margin: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            transition: background-color 0.3s, color 0.3s;
+            padding: 2rem;
         }
 
-        .card {
-            background-color: var(--container-bg);
-            padding: 3rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            transition: background-color 0.3s;
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
 
         h1 {
-            margin-bottom: 1.5rem;
-            font-size: 2.5rem;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .toggle-btn {
-            background-color: var(--accent-color);
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        input[type="text"], 
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #2a2a2a;
             color: white;
+            box-sizing: border-box;
+        }
+
+        .rating-slider {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: #000;
             border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 1rem;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.1s;
         }
 
-        .toggle-btn:hover {
-            opacity: 0.9;
-            transform: scale(1.05);
+        button:active {
+            transform: scale(0.98);
         }
 
-        .toggle-btn:active {
-            transform: scale(0.95);
+        .list-container {
+            margin-top: 2rem;
+        }
+
+        .drink-card {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .rating-badge {
+            background: var(--primary);
+            color: #000;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>Hello World</h1>
-        <p>GitHub Pages deployment test with interactive features.</p>
-        <button class="toggle-btn" id="themeToggle">Switch to Dark Mode</button>
+    <div class="container">
+        <h1>Drink Vault</h1>
+        
+        <div class="input-group">
+            <label for="drinkName">Drink Name</label>
+            <input type="text" id="drinkName" placeholder="e.g. Monster Ultra White">
+        </div>
+
+        <div class="input-group">
+            <label for="caffeine">Caffeine (mg)</label>
+            <input type="number" id="caffeine" placeholder="e.g. 160">
+        </div>
+
+        <div class="input-group">
+            <label>Rating: <span id="ratingVal">5</span>/10</label>
+            <input type="range" id="rating" min="1" max="10" value="5" class="rating-slider">
+        </div>
+
+        <button onclick="addDrink()">Log Drink</button>
+
+        <div class="list-container" id="drinkList">
+            <!-- Drinks will appear here -->
+        </div>
     </div>
 
     <script>
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        themeToggle.addEventListener('click', () => {
-            const isDark = body.getAttribute('data-theme') === 'dark';
-            
-            if (isDark) {
-                body.removeAttribute('data-theme');
-                themeToggle.textContent = 'Switch to Dark Mode';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                themeToggle.textContent = 'Switch to Light Mode';
-            }
+        const ratingSlider = document.getElementById('rating');
+        const ratingVal = document.getElementById('ratingVal');
+        
+        // Update the display value for the slider
+        ratingSlider.addEventListener('input', () => {
+            ratingVal.textContent = ratingSlider.value;
         });
+
+        function addDrink() {
+            const name = document.getElementById('drinkName').value;
+            const caffeine = document.getElementById('caffeine').value;
+            const rating = document.getElementById('rating').value;
+
+            if (!name) {
+                alert("Please enter a drink name!");
+                return;
+            }
+
+            const list = document.getElementById('drinkList');
+            const card = document.createElement('div');
+            card.className = 'drink-card';
+            
+            card.innerHTML = `
+                <div>
+                    <strong>${name}</strong><br>
+                    <small>${caffeine}mg caffeine</small>
+                </div>
+                <div class="rating-badge">${rating}/10</div>
+            `;
+
+            list.prepend(card);
+
+            // Clear inputs
+            document.getElementById('drinkName').value = '';
+            document.getElementById('caffeine').value = '';
+            document.getElementById('rating').value = 5;
+            ratingVal.textContent = 5;
+        }
     </script>
 </body>
 </html>
