@@ -3,175 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Drink Vault</title>
+    <title>Energy Enthusiast | Personal Ratings</title>
+    <!-- Chart.js for the Radar Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #00ff88;
-            --bg: #121212;
-            --surface: #1e1e1e;
-            --text: #e0e0e0;
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+            --text: #ffffff;
+            --accent-red: #ff4d4d;
+            --accent-blue: #4d94ff;
+            --border: #333;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem;
         }
 
-        .container {
-            max-width: 600px;
+        .layout {
+            max-width: 1100px;
             width: 100%;
-            background: var(--surface);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
         }
 
         h1 {
-            text-align: center;
-            color: var(--primary);
-            margin-bottom: 2rem;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-        }
-
-        input[type="text"], 
-        input[type="number"] {
+            letter-spacing: -1px;
+            margin-bottom: 30px;
+            border-left: 8px solid var(--accent-red);
+            padding-left: 15px;
             width: 100%;
-            padding: 0.8rem;
-            border-radius: 6px;
-            border: 1px solid #333;
-            background: #2a2a2a;
+            max-width: 1100px;
+        }
+
+        /* Form Styling */
+        .card {
+            background: var(--surface);
+            padding: 25px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.8rem; text-transform: uppercase; color: #888; margin-bottom: 5px; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            border: 1px solid var(--border);
             color: white;
+            border-radius: 4px;
             box-sizing: border-box;
         }
 
-        .rating-slider {
-            width: 100%;
-            margin: 1rem 0;
+        .sliders {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
         }
+
+        .slider-box span { float: right; color: var(--accent-blue); font-weight: bold; }
 
         button {
             width: 100%;
-            padding: 1rem;
-            background: var(--primary);
-            color: #000;
+            padding: 15px;
+            margin-top: 20px;
+            background: white;
+            color: black;
             border: none;
-            border-radius: 6px;
             font-weight: bold;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: 0.2s;
         }
 
-        button:active {
-            transform: scale(0.98);
+        button:hover { background: var(--accent-blue); color: white; }
+
+        /* Chart Styling */
+        .chart-container {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
         }
 
-        .list-container {
-            margin-top: 2rem;
+        /* Gallery Styling */
+        .controls {
+            width: 100%;
+            max-width: 1100px;
+            margin: 40px 0 20px 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .drink-grid {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
         }
 
         .drink-card {
-            background: #2a2a2a;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--primary);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: 0.3s;
+            cursor: pointer;
         }
 
-        .rating-badge {
-            background: var(--primary);
-            color: #000;
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
+        .drink-card:hover { border-color: var(--accent-blue); transform: translateY(-5px); }
+        .drink-card.active { border: 2px solid var(--accent-red); }
+
+        .drink-img {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            object-fit: contain;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .drink-info { padding: 15px; }
+        .drink-info h3 { margin: 0; font-size: 1.1rem; }
+        .drink-info p { margin: 5px 0; font-size: 0.8rem; color: #888; }
+
+        .score-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--accent-red);
+            font-size: 0.7rem;
             font-weight: bold;
+            border-radius: 2px;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Drink Vault</h1>
-        
-        <div class="input-group">
-            <label for="drinkName">Drink Name</label>
-            <input type="text" id="drinkName" placeholder="e.g. Monster Ultra White">
+    <h1>Energy Enthusiast</h1>
+
+    <div class="layout">
+        <!-- Input Form -->
+        <div class="card">
+            <div class="input-group">
+                <label>Drink Name</label>
+                <input type="text" id="name" placeholder="e.g. Ghost Sour Pink Lemonade">
+            </div>
+            <div class="input-group">
+                <label>Brand</label>
+                <input type="text" id="brand" placeholder="e.g. Ghost Energy">
+            </div>
+            <div class="input-group">
+                <label>Image URL (Can Photo)</label>
+                <input type="text" id="imgUrl" placeholder="Paste link to image here...">
+            </div>
+
+            <div class="sliders">
+                <div class="slider-box">
+                    <label>Can Design: <span id="v1">5</span></label>
+                    <input type="range" id="s1" min="1" max="10" value="5" oninput="updateVal(1)">
+                </div>
+                <div class="slider-box">
+                    <label>Flavor Accuracy: <span id="v2">5</span></label>
+                    <input type="range" id="s2" min="1" max="10" value="5" oninput="updateVal(2)">
+                </div>
+                <div class="slider-box">
+                    <label>Overall Flavor: <span id="v3">5</span></label>
+                    <input type="range" id="s3" min="1" max="10" value="5" oninput="updateVal(3)">
+                </div>
+                <div class="slider-box">
+                    <label>Overall Rating: <span id="v4">5</span></label>
+                    <input type="range" id="s4" min="1" max="10" value="5" oninput="updateVal(4)">
+                </div>
+            </div>
+
+            <button onclick="saveDrink()">Add Drink to My Vault</button>
         </div>
 
-        <div class="input-group">
-            <label for="caffeine">Caffeine (mg)</label>
-            <input type="number" id="caffeine" placeholder="e.g. 160">
-        </div>
-
-        <div class="input-group">
-            <label>Rating: <span id="ratingVal">5</span>/10</label>
-            <input type="range" id="rating" min="1" max="10" value="5" class="rating-slider">
-        </div>
-
-        <button onclick="addDrink()">Log Drink</button>
-
-        <div class="list-container" id="drinkList">
-            <!-- Drinks will appear here -->
+        <!-- Radar Chart -->
+        <div class="card chart-container">
+            <canvas id="radarChart"></canvas>
+            <p style="font-size: 0.7rem; color: #666; text-align: center; margin-top: 15px;">
+                Click cards below to layer/remove from comparison
+            </p>
         </div>
     </div>
 
+    <!-- Filters -->
+    <div class="controls">
+        <input type="text" id="filterText" placeholder="Search by name or brand..." oninput="renderGrid()">
+        <select id="sortBy" onchange="renderGrid()">
+            <option value="newest">Newest First</option>
+            <option value="rating">Highest Rating</option>
+        </select>
+    </div>
+
+    <!-- Gallery -->
+    <div class="drink-grid" id="drinkGrid"></div>
+
     <script>
-        const ratingSlider = document.getElementById('rating');
-        const ratingVal = document.getElementById('ratingVal');
-        
-        // Update the display value for the slider
-        ratingSlider.addEventListener('input', () => {
-            ratingVal.textContent = ratingSlider.value;
+        let drinks = JSON.parse(localStorage.getItem('energyDrinks')) || [];
+        let activeComparison = []; // Stores IDs of drinks currently on the chart
+
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        let radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Can Design', 'Flavor Accuracy', 'Overall Flavor', 'Overall Rating'],
+                datasets: []
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 10,
+                        grid: { color: '#333' },
+                        angleLines: { color: '#333' },
+                        pointLabels: { color: '#fff', font: { size: 12 } },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#fff' } }
+                }
+            }
         });
 
-        function addDrink() {
-            const name = document.getElementById('drinkName').value;
-            const caffeine = document.getElementById('caffeine').value;
-            const rating = document.getElementById('rating').value;
+        function updateVal(num) {
+            document.getElementById(`v${num}`).textContent = document.getElementById(`s${num}`).value;
+        }
 
-            if (!name) {
-                alert("Please enter a drink name!");
-                return;
+        function saveDrink() {
+            const drink = {
+                id: Date.now(),
+                name: document.getElementById('name').value,
+                brand: document.getElementById('brand').value,
+                img: document.getElementById('imgUrl').value || 'https://via.placeholder.com/250x200?text=No+Image',
+                scores: [
+                    parseInt(document.getElementById('s1').value),
+                    parseInt(document.getElementById('s2').value),
+                    parseInt(document.getElementById('s3').value),
+                    parseInt(document.getElementById('s4').value)
+                ]
+            };
+
+            if (!drink.name) return alert("Enter a name!");
+
+            drinks.push(drink);
+            localStorage.setItem('energyDrinks', JSON.stringify(drinks));
+            renderGrid();
+            
+            // Reset form
+            document.getElementById('name').value = '';
+            document.getElementById('brand').value = '';
+            document.getElementById('imgUrl').value = '';
+        }
+
+        function toggleComparison(id) {
+            const index = activeComparison.indexOf(id);
+            if (index > -1) {
+                activeComparison.splice(index, 1);
+            } else {
+                if (activeComparison.length >= 3) activeComparison.shift(); // Max 3 for clarity
+                activeComparison.push(id);
+            }
+            updateChart();
+            renderGrid();
+        }
+
+        function updateChart() {
+            const colors = [
+                { border: '#ff4d4d', bg: 'rgba(255, 77, 77, 0.2)' },
+                { border: '#4d94ff', bg: 'rgba(77, 148, 255, 0.2)' },
+                { border: '#ffffff', bg: 'rgba(255, 255, 255, 0.1)' }
+            ];
+
+            radarChart.data.datasets = activeComparison.map((id, i) => {
+                const drink = drinks.find(d => d.id === id);
+                return {
+                    label: drink.name,
+                    data: drink.scores,
+                    borderColor: colors[i].border,
+                    backgroundColor: colors[i].bg,
+                    borderWidth: 2
+                };
+            });
+            radarChart.update();
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('drinkGrid');
+            const searchText = document.getElementById('filterText').value.toLowerCase();
+            const sortBy = document.getElementById('sortBy').value;
+
+            let filtered = drinks.filter(d => 
+                d.name.toLowerCase().includes(searchText) || 
+                d.brand.toLowerCase().includes(searchText)
+            );
+
+            if (sortBy === 'rating') {
+                filtered.sort((a, b) => b.scores[3] - a.scores[3]);
+            } else {
+                filtered.sort((a, b) => b.id - a.id);
             }
 
-            const list = document.getElementById('drinkList');
-            const card = document.createElement('div');
-            card.className = 'drink-card';
-            
-            card.innerHTML = `
-                <div>
-                    <strong>${name}</strong><br>
-                    <small>${caffeine}mg caffeine</small>
+            grid.innerHTML = filtered.map(drink => `
+                <div class="drink-card ${activeComparison.includes(drink.id) ? 'active' : ''}" 
+                     onclick="toggleComparison(${drink.id})">
+                    <img src="${drink.img}" class="drink-img" onerror="this.src='https://via.placeholder.com/250x200?text=Error+Loading'">
+                    <div class="drink-info">
+                        <p>${drink.brand}</p>
+                        <h3>${drink.name}</h3>
+                        <div class="score-pill">${drink.scores[3]}/10 OVERALL</div>
+                    </div>
                 </div>
-                <div class="rating-badge">${rating}/10</div>
-            `;
-
-            list.prepend(card);
-
-            // Clear inputs
-            document.getElementById('drinkName').value = '';
-            document.getElementById('caffeine').value = '';
-            document.getElementById('rating').value = 5;
-            ratingVal.textContent = 5;
+            `).join('');
         }
+
+        // Initial render
+        renderGrid();
     </script>
 </body>
 </html>
