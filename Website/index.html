@@ -138,7 +138,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .drink-info { padding: 15px; }
+        .drink-info { padding: 15px; position: relative; }
         .drink-info h3 { margin: 0; font-size: 1.1rem; }
         .drink-info p { margin: 5px 0; font-size: 0.8rem; color: #888; }
 
@@ -150,6 +150,43 @@
             font-weight: bold;
             border-radius: 2px;
             margin-top: 10px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,0,0,0.2);
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            border-radius: 3px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .delete-btn:hover { background: #ff4d4d; color: white; }
+
+        .admin-section {
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border);
+            text-align: center;
+        }
+
+        .export-box {
+            display: none;
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            border: 1px solid #333;
         }
     </style>
 </head>
@@ -215,6 +252,16 @@
 
     <!-- Gallery -->
     <div class="drink-grid" id="drinkGrid"></div>
+
+    <!-- Admin Section -->
+    <div class="admin-section">
+        <button style="width: auto; padding: 10px 20px; background: transparent; color: #444; border: 1px solid #444;" 
+                onclick="toggleExport()">Owner: Export for Deployment</button>
+        <div id="exportBox" class="export-box">
+            // Copy this list and paste it into the PUBLIC_DRINKS constant in index.html to make them public!
+            <div id="exportContent"></div>
+        </div>
+    </div>
 
     <script>
         // These are your "Baked In" ratings that everyone will see
@@ -334,14 +381,16 @@
         ];
 
         let localDrinks = JSON.parse(localStorage.getItem('energyDrinks')) || [];
+        let drinks = [];
         
-        // Merge them, ensuring we don't duplicate drinks that are already in the public list
-        let drinks = [...PUBLIC_DRINKS];
-        localDrinks.forEach(ld => {
-            if (!drinks.find(pd => pd.id === ld.id)) {
-                drinks.push(ld);
-            }
-        });
+        function mergeDrinks() {
+            drinks = [...PUBLIC_DRINKS];
+            localDrinks.forEach(ld => {
+                if (!drinks.find(pd => pd.id === ld.id)) {
+                    drinks.push(ld);
+                }
+            });
+        }
 
         let activeComparison = [];
 
@@ -389,14 +438,29 @@
 
             if (!drink.name) return alert("Enter a name!");
 
-            drinks.push(drink);
-            localStorage.setItem('energyDrinks', JSON.stringify(drinks));
+            localDrinks.push(drink);
+            localStorage.setItem('energyDrinks', JSON.stringify(localDrinks));
             renderGrid();
             
             // Reset form
             document.getElementById('name').value = '';
             document.getElementById('brand').value = '';
             document.getElementById('imgUrl').value = '';
+        }
+
+        function deleteDrink(id, event) {
+            event.stopPropagation();
+            if(!confirm("Delete this rating?")) return;
+            
+            // Remove from local storage
+            localDrinks = localDrinks.filter(d => d.id !== id);
+            localStorage.setItem('energyDrinks', JSON.stringify(localDrinks));
+            
+            // Remove from active comparison
+            activeComparison = activeComparison.filter(aid => aid !== id);
+            
+            renderGrid();
+            updateChart();
         }
 
         function toggleComparison(id) {
@@ -432,6 +496,7 @@
         }
 
         function renderGrid() {
+            mergeDrinks();
             const grid = document.getElementById('drinkGrid');
             const searchText = document.getElementById('filterText').value.toLowerCase();
             const sortBy = document.getElementById('sortBy').value;
@@ -452,6 +517,7 @@
                      onclick="toggleComparison(${drink.id})">
                     <img src="${drink.img}" class="drink-img" onerror="this.src='https://via.placeholder.com/250x200?text=Error+Loading'">
                     <div class="drink-info">
+                        ${!PUBLIC_DRINKS.find(pd => pd.id === drink.id) ? `<button class="delete-btn" onclick="deleteDrink(${drink.id}, event)">Delete</button>` : ''}
                         <p>${drink.brand}</p>
                         <h3>${drink.name}</h3>
                         <div class="score-pill">${drink.scores[3]}/10 OVERALL</div>
@@ -460,8 +526,21 @@
             `).join('');
         }
 
+        function toggleExport() {
+            const box = document.getElementById('exportBox');
+            const content = document.getElementById('exportContent');
+            if (box.style.display === 'block') {
+                box.style.display = 'none';
+            } else {
+                box.style.display = 'block';
+                content.textContent = JSON.stringify(drinks, null, 2);
+            }
+        }
+
         // Initial render
         renderGrid();
     </script>
+</body>
+</html>
 </body>
 </html>
