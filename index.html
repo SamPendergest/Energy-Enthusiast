@@ -131,7 +131,7 @@
             <div class="home-hero">
                 <h1 class="hero-title">Wired<br>Different.</h1>
                 <p class="hero-subtitle" style="font-size: 1.5rem; color: #888; margin: 20px 0 40px 0;">Welcome to Energy Enthusiast. A dedicated space for the science, flavor, and design of energy.</p>
-                <button class="launch-btn" style="width: fit-content;" onclick="showPage('vault')">ENTER THE VAULT ?</button>
+                <button class="launch-btn" style="width: fit-content;" onclick="showPage('vault')">ENTER THE VAULT -> </button>
             </div>
         </section>
 
@@ -587,11 +587,46 @@
         }
     
 
+    
     function showPage(pageId) {
+        const nextActive = document.getElementById(pageId);
+        if (!nextActive) return;
+
+        // Update Nav Links
         document.querySelectorAll(".nav-item").forEach(item => {
             item.classList.remove("active");
-            if (item.getAttribute("onclick").includes(pageId)) item.classList.add("active");
+            if (item.getAttribute("onclick") && item.getAttribute("onclick").includes(pageId)) {
+                item.classList.add("active");
+            }
         });
+
+        const currentActive = document.querySelector(".page-section.active");
+        if (currentActive === nextActive) return;
+
+        // Transition logic
+        if (currentActive) {
+            currentActive.style.opacity = "0";
+            setTimeout(() => {
+                currentActive.classList.remove("active");
+                nextActive.classList.add("active");
+                nextActive.style.display = "block"; // Ensure it shows
+                setTimeout(() => {
+                    nextActive.style.opacity = "1";
+                    if(pageId === "vault") {
+                        renderGrid();
+                        if(window.radarChart) {
+                            window.radarChart.resize();
+                            window.radarChart.update();
+                        }
+                    }
+                }, 50);
+            }, 400);
+        } else {
+            nextActive.classList.add("active");
+            nextActive.style.opacity = "1";
+        }
+    }
+);
 
         const currentActive = document.querySelector(".page-section.active");
         const nextActive = document.getElementById(pageId);
@@ -611,6 +646,7 @@
 </script>
 </body>
 </html>
+
 
 
 
