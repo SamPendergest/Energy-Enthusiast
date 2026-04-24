@@ -1,28 +1,28 @@
-﻿# Website Build Context (GitHub Pages)
+﻿# Website Build Context (The Rush Rater)
 
-## Environment Overview
-Static website hosted on GitHub Pages. No backend or server-side execution allowed.
+## Project Overview
+A personal energy drink rating vault built for a university class, developed with assistance from Google Gemini.
 
-## Core Structure
-- **Primary File:** `index.html` (Must be in root)
-- **Architecture:** Single-file design. All HTML, CSS, and JS are contained in `index.html` to ensure reliability and simplicity.
+## Environment & Deployment
+- **Platform:** GitHub Pages (Static Hosting)
+- **URL:** https://sampendergest.github.io/Energy-Enthusiast/
+- **Repository:** SamPendergest/Energy-Enthusiast (Files located in root)
 
-## Current Architecture (Updated April 2026)
-- **Sidebar Navigation:** A fixed sidebar menu allows users to navigate between "Home", "The Vault", and "About".
-- **Single-Page Application (SPA) Logic:** JavaScript handles smooth transitions between different `<section>` blocks, giving a multi-page feel while remaining a single file.
-- **The Vault:**
-    - **Public Data:** Ratings are "baked" into the `PUBLIC_DRINKS` constant.
-    - **Hybrid Storage:** Merges public data with `localStorage` for personal additions.
-    - **Comparison Tool:** A Radar Chart (Chart.js) compares up to 3 selected drinks.
+## Core Architecture
+- **Single-File Design:** `index.html` contains all HTML, CSS, and JS.
+- **Multi-Page Sidebar UI:** A fixed sidebar handles navigation between Home, Vault, and About sections using JavaScript transitions.
+- **The Vault Logic:** 
+  - Ratings are stored in `PUBLIC_DRINKS` (baked-in) and `localStorage` (personal).
+  - Features a Radar Chart for drink comparison.
+  - Dashboard tracks Total Rated, Average Rating, and Top Brand.
 
-## GitHub Pages Deployment
-- Repository: `SamPendergest/Energy-Enthusiast`
-- URL: `https://sampendergest.github.io/Energy-Enthusiast/`
-- Files are maintained in the root directory for direct deployment.
+## Branding & Identity
+- **Title:** The Rush Rater (Vibrant Red)
+- **Subtitle:** The Energy Enthusiast. Caffeine for the Cultured. A dedicated space for the science, flavor, and design of energy.
+- **About Page:** Personal bio for Sam Pendergest, documenting the university project and Gemini collaboration.
 
-## Repository Cleanup
-- Removed unrelated notes and temporary folders to keep the repository focused strictly on the website deployment.
-
----
-## Objective
-Maintain a visually impactful, highly functional, yet simple-to-maintain website. Priority is on stability, smooth user experience, and visual polish.
+## Status (End of Session - April 2026)
+- Navigation is stable and bug-free.
+- "Top Brand" stat calculation is fixed.
+- Branding and color scheme (Vibrant Red accent) are applied throughout.
+- Repository is clean of unrelated Otter.ai notes.
