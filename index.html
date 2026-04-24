@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -259,15 +259,30 @@
             radarChart.update();
         }
 
+        
         function updateDashboard() {
             if (!drinks.length) return;
-            document.getElementById('stat-total').textContent = drinks.length;
-            document.getElementById('stat-avg').textContent = (drinks.reduce((a, b) => a + b.scores[3], 0) / drinks.length).toFixed(1);
+            
+            // Update Total and Avg
+            document.getElementById("stat-total").textContent = drinks.length;
+            document.getElementById("stat-avg").textContent = (drinks.reduce((a, b) => a + b.scores[3], 0) / drinks.length).toFixed(1);
+            
+            // Calculate Top Brand (Brand with most ratings)
+            const brandCounts = {};
+            drinks.forEach(d => {
+                const b = d.brand ? d.brand.trim() : "Unknown";
+                brandCounts[b] = (brandCounts[b] || 0) + 1;
+            });
+            const topBrand = Object.keys(brandCounts).reduce((a, b) => brandCounts[a] > brandCounts[b] ? a : b);
+            document.getElementById("stat-brand").textContent = topBrand;
+
+            // Update Hall of Fame
             const hof = [...drinks].sort((a, b) => b.scores[3] - a.scores[3])[0];
-            document.getElementById('hof-img').src = hof.img;
-            document.getElementById('hof-name').textContent = hof.name;
-            document.getElementById('hof-score').textContent = hof.scores[3] + "/10";
+            document.getElementById("hof-img").src = hof.img;
+            document.getElementById("hof-name").textContent = hof.name;
+            document.getElementById("hof-score").textContent = hof.scores[3] + "/10";
         }
+
 
         function showPage(id) {
             const cur = document.querySelector('.page-section.active');
@@ -288,3 +303,4 @@
     </script>
 </body>
 </html>
+
