@@ -1,100 +1,28 @@
-# Website Build Context (GitHub Pages)
+﻿# Website Build Context (GitHub Pages)
 
 ## Environment Overview
-
-You are assisting in the creation of a simple website that will be deployed using GitHub Pages.
-
-This environment has the following constraints:
-
-- The site will be hosted as a static website
-- There is no backend or server-side execution
-- All functionality must run in the browser
-- The final output must work when deployed via GitHub Pages
-
----
+Static website hosted on GitHub Pages. No backend or server-side execution allowed.
 
 ## Core Structure
+- **Primary File:** `index.html` (Must be in root)
+- **Architecture:** Single-file design. All HTML, CSS, and JS are contained in `index.html` to ensure reliability and simplicity.
 
-A website in this environment is a collection of files.
+## Current Architecture (Updated April 2026)
+- **Sidebar Navigation:** A fixed sidebar menu allows users to navigate between "Home", "The Vault", and "About".
+- **Single-Page Application (SPA) Logic:** JavaScript handles smooth transitions between different `<section>` blocks, giving a multi-page feel while remaining a single file.
+- **The Vault:**
+    - **Public Data:** Ratings are "baked" into the `PUBLIC_DRINKS` constant.
+    - **Hybrid Storage:** Merges public data with `localStorage` for personal additions.
+    - **Comparison Tool:** A Radar Chart (Chart.js) compares up to 3 selected drinks.
 
-The primary file is:
+## GitHub Pages Deployment
+- Repository: `SamPendergest/Energy-Enthusiast`
+- URL: `https://sampendergest.github.io/Energy-Enthusiast/`
+- Files are maintained in the root directory for direct deployment.
 
-index.html
-
-This file serves as the homepage and entry point of the site. GitHub Pages expects this file to exist in the published directory.
-
----
-
-## File Constraints
-
-To reduce complexity and ensure reliability:
-
-- The entire website should be built using a single file: index.html
-- All HTML, CSS, and JavaScript should be contained within this file
-- Do not create additional files unless absolutely necessary
-- Avoid multi-file architectures (e.g., separate CSS or JS files)
-
----
-
-## Functional Expectations
-
-The website should include:
-
-- A clear and coherent structure
-- Readable content and layout
-- At least one interactive feature implemented with JavaScript
-
-Examples of valid interaction include:
-
-- A button that triggers a visible change
-- A form or input field with a response
-- A simple tool, calculator, or dynamic element
+## Repository Cleanup
+- Removed unrelated notes and temporary folders to keep the repository focused strictly on the website deployment.
 
 ---
-
-## Development Approach
-
-When generating solutions:
-
-- Produce complete, working code rather than partial snippets
-- Prefer simple and reliable implementations over complex ones
-- Make incremental improvements rather than large rewrites
-- Ensure all features are compatible with a static hosting environment
-
----
-
-## GitHub Pages Behavior
-
-The website will be published from a GitHub repository.
-
-For the site to function correctly:
-
-- index.html must be present
-- All referenced assets must be accessible within the repository or via external URLs
-- No server-side dependencies should be introduced
-
-Changes to the code will be deployed after being committed and pushed to the repository.
-
----
-
-## Media Handling
-
-- Images may be linked externally or stored within the repository
-- Use simple file paths and names
-- Videos should be embedded (e.g., iframe from YouTube), not uploaded directly
-
----
-
-## Current Status (April 2026)
-
-- **Public Vault Integrated:** Ratings are now "baked" into the `index.html` file within a `PUBLIC_DRINKS` constant. This ensures visitors see curated content immediately.
-- **Hybrid Storage:** The app now merges `PUBLIC_DRINKS` with `localStorage` (localDrinks), allowing the owner to add new ratings in the browser that persist locally.
-- **Deployment:** The site is configured for GitHub Pages and is live at `https://sampendergest.github.io/Energy-Enthusiast/`.
-
----
-
 ## Objective
-
-The goal is to produce a functional, simple, and reliable website that can be successfully deployed and accessed via GitHub Pages.
-
-Favor clarity, stability, and completeness over complexity.
+Maintain a visually impactful, highly functional, yet simple-to-maintain website. Priority is on stability, smooth user experience, and visual polish.
