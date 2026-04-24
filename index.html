@@ -244,9 +244,80 @@
         .spotlight-img { height: 80px; width: 60px; object-fit: contain; background: #000; border-radius: 2px; }
         .spotlight-info h3 { margin: 0; font-size: 1rem; color: #d4af37; }
         .spotlight-info p { margin: 2px 0; font-size: 0.7rem; color: #aaa; }
+    
+        /* Home Page Styling */
+        #home-view {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+            padding: 20px;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin: 0;
+            line-height: 0.9;
+            background: linear-gradient(to bottom, #fff 40%, #444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #888;
+            margin: 20px 0 40px 0;
+            max-width: 600px;
+        }
+
+        .launch-btn {
+            background: var(--accent-red);
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            font-weight: 900;
+        }
+
+        .launch-btn:hover {
+            background: white;
+            color: black;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 77, 77, 0.4);
+        }
+
+        #app-view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
+    <!-- Home Page -->
+    <div id="home-view">
+        <h1 class="hero-title">Energy<br>Enthusiast</h1>
+        <p class="hero-subtitle">The ultimate personal vault for tracking, comparing, and discovering the best energy drinks on the market.</p>
+        <button class="launch-btn" onclick="enterApp()">LAUNCH VAULT</button>
+    </div>
+
+    <!-- Main App Content -->
+    <div id="app-view">
+        
 
     <h1>Energy Enthusiast</h1>
 
@@ -343,6 +414,8 @@
         </div>
     </div>
 
+    
+    </div>
     <script>
         // These are your "Baked In" ratings that everyone will see
         const PUBLIC_DRINKS = [
@@ -647,8 +720,22 @@
 
         // Initial render
         renderGrid();
+    
+        function enterApp() {
+            const home = document.getElementById("home-view");
+            const app = document.getElementById("app-view");
+            
+            home.style.opacity = "0";
+            setTimeout(() => {
+                home.style.display = "none";
+                app.style.display = "flex";
+                setTimeout(() => {
+                    app.style.opacity = "1";
+                    // Trigger a re-render of the chart to fix scaling issues
+                    if(radarChart) radarChart.resize();
+                }, 50);
+            }, 500);
+        }
     </script>
-</body>
-</html>
-</body>
-</html>
+</body></html>
+
