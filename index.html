@@ -361,7 +361,7 @@
         ];
 
         let localDrinks = JSON.parse(localStorage.getItem('energyDrinks')) || [];
-        let drinks = [];
+        let drinks = []; mergeDrinks();
         
         function mergeDrinks() {
             drinks = [...PUBLIC_DRINKS];
@@ -392,7 +392,7 @@
                         ticks: { display: false }
                     }
                 },
-                plugins: {
+                maintainAspectRatio: false, plugins: {
                     legend: { labels: { color: '#fff' } }
                 }
             }
@@ -455,9 +455,31 @@
             renderGrid();
         }
 
+        
         function updateChart() {
+            if (!radarChart || !drinks.length) return;
+
             const colors = [
-                { border: '#ff4d4d', bg: 'rgba(255, 77, 77, 0.2)' },
+                { border: "#ff4d4d", bg: "rgba(255, 77, 77, 0.2)" },
+                { border: "#4d94ff", bg: "rgba(77, 148, 255, 0.2)" },
+                { border: "#ffffff", bg: "rgba(255, 255, 255, 0.1)" }
+            ];
+
+            radarChart.data.datasets = activeComparison.map((id, i) => {
+                const drink = drinks.find(d => d.id === id);
+                if (!drink) return null;
+                return {
+                    label: drink.name,
+                    data: drink.scores,
+                    borderColor: colors[i % colors.length].border,
+                    backgroundColor: colors[i % colors.length].bg,
+                    borderWidth: 2
+                };
+            }).filter(d => d !== null);
+            
+            radarChart.update();
+        }
+,
                 { border: '#4d94ff', bg: 'rgba(77, 148, 255, 0.2)' },
                 { border: '#ffffff', bg: 'rgba(255, 255, 255, 0.1)' }
             ];
@@ -477,7 +499,7 @@
 
         function renderGrid() {
             mergeDrinks();
-            updateDashboard();
+            updateDashboard(); updateChart();
             const grid = document.getElementById('drinkGrid');
             const searchText = document.getElementById('filterText').value.toLowerCase();
             const sortBy = document.getElementById('sortBy').value;
@@ -589,6 +611,7 @@
 </script>
 </body>
 </html>
+
 
 
 
