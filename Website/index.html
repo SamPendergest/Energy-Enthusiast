@@ -188,11 +188,91 @@
             white-space: pre-wrap;
             border: 1px solid #333;
         }
+
+        /* Stats Dashboard Styling */
+        .dashboard {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1.5fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr 1fr; }
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card h4 { margin: 0; font-size: 0.7rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+        .stat-card .stat-value { font-size: 2rem; font-weight: 900; color: var(--accent-blue); margin: 5px 0; }
+        
+        .spotlight-card {
+            background: linear-gradient(45deg, #1a1a1a, #2a2315);
+            border: 1px solid #d4af37; /* Gold border */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .spotlight-card::after {
+            content: "HALL OF FAME";
+            position: absolute;
+            top: 10px;
+            right: -25px;
+            background: #d4af37;
+            color: black;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 2px 30px;
+            transform: rotate(45deg);
+        }
+
+        .spotlight-img { height: 80px; width: 60px; object-fit: contain; background: #000; border-radius: 2px; }
+        .spotlight-info h3 { margin: 0; font-size: 1rem; color: #d4af37; }
+        .spotlight-info p { margin: 2px 0; font-size: 0.7rem; color: #aaa; }
     </style>
 </head>
 <body>
 
     <h1>Energy Enthusiast</h1>
+
+    <!-- Stats Dashboard -->
+    <div class="dashboard">
+        <div class="stat-card">
+            <h4>Total Rated</h4>
+            <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+            <h4>Avg Rating</h4>
+            <div class="stat-value" id="stat-avg">0.0</div>
+        </div>
+        <div class="stat-card">
+            <h4>Top Brand</h4>
+            <div class="stat-value" id="stat-brand" style="font-size: 1.2rem;">None</div>
+        </div>
+        <div class="stat-card spotlight-card" id="hall-of-fame">
+            <img src="" class="spotlight-img" id="hof-img">
+            <div class="spotlight-info">
+                <p id="hof-brand">BRAND</p>
+                <h3 id="hof-name">Drink Name</h3>
+                <div class="score-pill" style="background: #d4af37; color: black;" id="hof-score">0.0/10</div>
+            </div>
+        </div>
+    </div>
 
     <div class="layout">
         <!-- Input Form -->
@@ -497,6 +577,7 @@
 
         function renderGrid() {
             mergeDrinks();
+            updateDashboard();
             const grid = document.getElementById('drinkGrid');
             const searchText = document.getElementById('filterText').value.toLowerCase();
             const sortBy = document.getElementById('sortBy').value;
@@ -524,6 +605,33 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function updateDashboard() {
+            if (drinks.length === 0) return;
+
+            // 1. Total Drinks
+            document.getElementById('stat-total').textContent = drinks.length;
+
+            // 2. Average Rating
+            const avg = drinks.reduce((acc, d) => acc + d.scores[3], 0) / drinks.length;
+            document.getElementById('stat-avg').textContent = avg.toFixed(1);
+
+            // 3. Top Brand (Most Rated)
+            const brandCounts = {};
+            drinks.forEach(d => {
+                const b = d.brand.trim();
+                brandCounts[b] = (brandCounts[b] || 0) + 1;
+            });
+            const topBrand = Object.keys(brandCounts).reduce((a, b) => brandCounts[a] > brandCounts[b] ? a : b);
+            document.getElementById('stat-brand').textContent = topBrand;
+
+            // 4. Hall of Fame (Highest Rated)
+            const hof = [...drinks].sort((a, b) => b.scores[3] - a.scores[3])[0];
+            document.getElementById('hof-img').src = hof.img;
+            document.getElementById('hof-brand').textContent = hof.brand;
+            document.getElementById('hof-name').textContent = hof.name;
+            document.getElementById('hof-score').textContent = hof.scores[3].toFixed(1) + "/10";
         }
 
         function toggleExport() {
