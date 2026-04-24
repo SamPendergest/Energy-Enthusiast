@@ -176,19 +176,19 @@
             <div class="sliders">
                 <div class="slider-box">
                     <label>Can Design: <span id="v1">5</span></label>
-                    <input type="range" id="s1" min="1" max="10" value="5" oninput="updateVal(1)">
+                    <input type="range" id="s1" min="1" max="10" value="5" step="0.1" oninput="updateVal(1)">
                 </div>
                 <div class="slider-box">
                     <label>Flavor Accuracy: <span id="v2">5</span></label>
-                    <input type="range" id="s2" min="1" max="10" value="5" oninput="updateVal(2)">
+                    <input type="range" id="s2" min="1" max="10" value="5" step="0.1" oninput="updateVal(2)">
                 </div>
                 <div class="slider-box">
-                    <label>Overall Flavor: <span id="v3">5</span></label>
-                    <input type="range" id="s3" min="1" max="10" value="5" oninput="updateVal(3)">
+                    <label>Taste: <span id="v3">5</span></label>
+                    <input type="range" id="s3" min="1" max="10" value="5" step="0.1" oninput="updateVal(3)">
                 </div>
                 <div class="slider-box">
                     <label>Overall Rating: <span id="v4">5</span></label>
-                    <input type="range" id="s4" min="1" max="10" value="5" oninput="updateVal(4)">
+                    <input type="range" id="s4" min="1" max="10" value="5" step="0.1" oninput="updateVal(4)">
                 </div>
             </div>
 
@@ -217,14 +217,139 @@
     <div class="drink-grid" id="drinkGrid"></div>
 
     <script>
-        let drinks = JSON.parse(localStorage.getItem('energyDrinks')) || [];
-        let activeComparison = []; // Stores IDs of drinks currently on the chart
+        // These are your "Baked In" ratings that everyone will see
+        const PUBLIC_DRINKS = [
+          {
+            "id": 1776973202070,
+            "name": "Raspberry Cream",
+            "brand": "Ghost",
+            "img": "https://completehealthshop.com/cdn/shop/files/ghost_energy_drink_raspberry_cream_530x.png?v=1772332332",
+            "scores": [10, 8.4, 8.9, 9.2]
+          },
+          {
+            "id": 1776973316281,
+            "name": "Freedom Punch",
+            "brand": "Black Rifle Energy",
+            "img": "https://storage.googleapis.com/images-prs-prd-c7e7986.prs.prd.v8.commerce.mi9cloud.com/product-images/zoom/00810140157713_1",
+            "scores": [9.6, 5.4, 5.8, 6.1]
+          },
+          {
+            "id": 1777003215388,
+            "name": "Original",
+            "brand": "Ghost",
+            "img": "https://drinkghost.com/cdn/shop/files/OGFront_b5090f47-67f3-4a61-9c9d-43229be0709c_700x.webp?v=1756221881",
+            "scores": [7, 1, 6.9, 7]
+          },
+          {
+            "id": 1777003296892,
+            "name": "Blue Raspberry",
+            "brand": "Sparkling Ice Caffine",
+            "img": "https://d3koznjjgilbyx.cloudfront.net/lowesfoods/product_images/0001657195384.jpg",
+            "scores": [5.3, 7.2, 6.8, 6.9]
+          },
+          {
+            "id": 1777003842931,
+            "name": "Black Raspberry",
+            "brand": "Sparking Ice Caffine",
+            "img": "https://www.sparklingice.com/wp-content/uploads/2025/12/Black-Raspberry-Caffeine.webp",
+            "scores": [5, 7.7, 7.1, 7.2]
+          },
+          {
+            "id": 1777003991171,
+            "name": "Cherry Slush",
+            "brand": "Alani",
+            "img": "https://www.alaninu.com/cdn/shop/files/energy_1serve_cherryslush_web_600x.png?v=1691680468",
+            "scores": [8, 7.1, 8.4, 8.1]
+          },
+          {
+            "id": 1777004082776,
+            "name": "Alani",
+            "brand": "Orange Kiss",
+            "img": "https://www.alaninu.com/cdn/shop/files/Orange_Kiss_Energy-ProductFrontV2_600x.png?v=1708990699",
+            "scores": [8.9, 7.2, 6.8, 7.3]
+          },
+          {
+            "id": 1777004143878,
+            "name": "Ghost",
+            "brand": "Orange Cream",
+            "img": "https://bevmo.com/cdn/shop/files/40ea375d-fc4a-4a2e-9114-202e1a757eb1.png?v=1773692690&width=1445",
+            "scores": [10, 7.8, 7.2, 7.1]
+          },
+          {
+            "id": 1777004214254,
+            "name": "Ghost ",
+            "brand": "Swedish Fish",
+            "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5oLvfx8tXmodeYiK8B2miCcpsgwdcGCM_1w&s",
+            "scores": [8, 9.8, 7.9, 8.2]
+          },
+          {
+            "id": 1777004270888,
+            "name": "Ghost",
+            "brand": "Warhead Sour Watermelon",
+            "img": "https://drinkghost.com/cdn/shop/files/WarheadsSWFront_700x.webp?v=1744834631",
+            "scores": [10, 9.4, 7.4, 7.8]
+          },
+          {
+            "id": 1777004424991,
+            "name": "Alani",
+            "brand": "Peach",
+            "img": "https://www.alaninu.com/cdn/shop/files/energy_1serve_Peach_web_1200x.png?v=1691680844",
+            "scores": [7.6, 9.5, 6.3, 6.5]
+          },
+          {
+            "id": 1777004485548,
+            "name": "Alani",
+            "brand": "Strawberry Sunrise",
+            "img": "https://www.alaninu.com/cdn/shop/files/Updated_new_Strawberry_Sunrise_PDP_600x.png?v=1738186829",
+            "scores": [9.6, 7.8, 8.7, 8.4]
+          },
+          {
+            "id": 1777004571034,
+            "name": "Strawbango",
+            "brand": "Ghost",
+            "img": "https://drinkghost.com/cdn/shop/files/StrawbangoFront.webp?v=1744833958&width=1200",
+            "scores": [10, 8.3, 8.1, 8.1]
+          },
+          {
+            "id": 1777004814605,
+            "name": "Sour Patch Kids Blue Raspberry",
+            "brand": "Ghost",
+            "img": "https://i5.walmartimages.com/seo/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can_aba4647d-f190-4a7c-af4b-8fe63466b970.a2285526e4a5cb7dda2b82476e8d7f3b.png?odnHeight=768&odnWidth=768&odnBg=FFFFFF",
+            "scores": [10, 8.2, 8.6, 8.5]
+          },
+          {
+            "id": 1777004864824,
+            "name": "Sour Patch Kids Redberry",
+            "brand": "Ghost",
+            "img": "https://www.happysliquor.com/cdn/shop/files/GHOST_ENERGY_SPK_REDBERRY_1242x1674_b8fabdeb-7851-41ec-af2a-7442617c658c.webp?v=1742326242",
+            "scores": [10, 9.1, 8.6, 8.8]
+          },
+          {
+            "id": 1777004945135,
+            "name": "Welch's Grape-Cran",
+            "brand": "Ghost",
+            "img": "https://drinkghost.com/cdn/shop/files/WelchsGrapeCran_700x.webp?v=1765816503",
+            "scores": [10, 8.3, 8.7, 8.4]
+          }
+        ];
+
+        let localDrinks = JSON.parse(localStorage.getItem('energyDrinks')) || [];
+        
+        // Merge them, ensuring we don't duplicate drinks that are already in the public list
+        let drinks = [...PUBLIC_DRINKS];
+        localDrinks.forEach(ld => {
+            if (!drinks.find(pd => pd.id === ld.id)) {
+                drinks.push(ld);
+            }
+        });
+
+        let activeComparison = [];
 
         const ctx = document.getElementById('radarChart').getContext('2d');
         let radarChart = new Chart(ctx, {
             type: 'radar',
             data: {
-                labels: ['Can Design', 'Flavor Accuracy', 'Overall Flavor', 'Overall Rating'],
+                labels: ['Can Design', 'Flavor Accuracy', 'Taste', 'Overall Rating'],
                 datasets: []
             },
             options: {
@@ -255,10 +380,10 @@
                 brand: document.getElementById('brand').value,
                 img: document.getElementById('imgUrl').value || 'https://via.placeholder.com/250x200?text=No+Image',
                 scores: [
-                    parseInt(document.getElementById('s1').value),
-                    parseInt(document.getElementById('s2').value),
-                    parseInt(document.getElementById('s3').value),
-                    parseInt(document.getElementById('s4').value)
+                    parseFloat(document.getElementById('s1').value),
+                    parseFloat(document.getElementById('s2').value),
+                    parseFloat(document.getElementById('s3').value),
+                    parseFloat(document.getElementById('s4').value)
                 ]
             };
 
