@@ -582,17 +582,14 @@
             nextActive.classList.add("active");
             setTimeout(() => {
                 nextActive.style.opacity = "1";
-                if(pageId === "vault") { renderGrid(); if(radarChart) {
-                    radarChart.resize();
-                    radarChart.update();
-                }
-            }, 50);
+                if(pageId === "vault") { renderGrid(); if(radarChart) { radarChart.resize(); radarChart.update(); } } }, 50);
         }, 400);
     }
 
 </script>
 </body>
 </html>
+
 
 
 
