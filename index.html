@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energy Enthusiast | Personal Ratings</title>
+    <title>Energy Enthusiast 2.0 | Personal Ratings</title>
     <!-- Chart.js for the Radar Graph -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -138,7 +138,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .drink-info { padding: 15px; }
+        .drink-info { padding: 15px; position: relative; }
         .drink-info h3 { margin: 0; font-size: 1.1rem; }
         .drink-info p { margin: 5px 0; font-size: 0.8rem; color: #888; }
 
@@ -151,11 +151,128 @@
             border-radius: 2px;
             margin-top: 10px;
         }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,0,0,0.2);
+            color: #ff4d4d;
+            border: 1px solid #ff4d4d;
+            padding: 2px 6px;
+            font-size: 0.6rem;
+            border-radius: 3px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .delete-btn:hover { background: #ff4d4d; color: white; }
+
+        .admin-section {
+            width: 100%;
+            max-width: 1100px;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border);
+            text-align: center;
+        }
+
+        .export-box {
+            display: none;
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            border: 1px solid #333;
+        }
+
+        /* Stats Dashboard Styling */
+        .dashboard {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1.5fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr 1fr; }
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card h4 { margin: 0; font-size: 0.7rem; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+        .stat-card .stat-value { font-size: 2rem; font-weight: 900; color: var(--accent-blue); margin: 5px 0; }
+        
+        .spotlight-card {
+            background: linear-gradient(45deg, #1a1a1a, #2a2315);
+            border: 1px solid #d4af37; /* Gold border */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .spotlight-card::after {
+            content: "HALL OF FAME";
+            position: absolute;
+            top: 10px;
+            right: -25px;
+            background: #d4af37;
+            color: black;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 2px 30px;
+            transform: rotate(45deg);
+        }
+
+        .spotlight-img { height: 80px; width: 60px; object-fit: contain; background: #000; border-radius: 2px; }
+        .spotlight-info h3 { margin: 0; font-size: 1rem; color: #d4af37; }
+        .spotlight-info p { margin: 2px 0; font-size: 0.7rem; color: #aaa; }
     </style>
 </head>
 <body>
 
     <h1>Energy Enthusiast</h1>
+
+    <!-- Stats Dashboard -->
+    <div class="dashboard">
+        <div class="stat-card">
+            <h4>Total Rated</h4>
+            <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+            <h4>Avg Rating</h4>
+            <div class="stat-value" id="stat-avg">0.0</div>
+        </div>
+        <div class="stat-card">
+            <h4>Top Brand</h4>
+            <div class="stat-value" id="stat-brand" style="font-size: 1.2rem;">None</div>
+        </div>
+        <div class="stat-card spotlight-card" id="hall-of-fame">
+            <img src="" class="spotlight-img" id="hof-img">
+            <div class="spotlight-info">
+                <p id="hof-brand">BRAND</p>
+                <h3 id="hof-name">Drink Name</h3>
+                <div class="score-pill" style="background: #d4af37; color: black;" id="hof-score">0.0/10</div>
+            </div>
+        </div>
+    </div>
 
     <div class="layout">
         <!-- Input Form -->
@@ -216,9 +333,146 @@
     <!-- Gallery -->
     <div class="drink-grid" id="drinkGrid"></div>
 
+    <!-- Admin Section -->
+    <div class="admin-section">
+        <button style="width: auto; padding: 10px 20px; background: transparent; color: #444; border: 1px solid #444;" 
+                onclick="toggleExport()">Owner: Export for Deployment</button>
+        <div id="exportBox" class="export-box">
+            // Copy this list and paste it into the PUBLIC_DRINKS constant in index.html to make them public!
+            <div id="exportContent"></div>
+        </div>
+    </div>
+
     <script>
-        let drinks = JSON.parse(localStorage.getItem('energyDrinks')) || [];
-        let activeComparison = []; // Stores IDs of drinks currently on the chart
+        // These are your "Baked In" ratings that everyone will see
+        const PUBLIC_DRINKS = [
+          {
+            "id": 1776973202070,
+            "name": "Raspberry Cream",
+            "brand": "Ghost",
+            "img": "https://completehealthshop.com/cdn/shop/files/ghost_energy_drink_raspberry_cream_530x.png?v=1772332332",
+            "scores": [10, 8.4, 8.9, 9.2]
+          },
+          {
+            "id": 1776973316281,
+            "name": "Freedom Punch",
+            "brand": "Black Rifle Energy",
+            "img": "https://storage.googleapis.com/images-prs-prd-c7e7986.prs.prd.v8.commerce.mi9cloud.com/product-images/zoom/00810140157713_1",
+            "scores": [9.6, 5.4, 5.8, 6.1]
+          },
+          {
+            "id": 1777003215388,
+            "name": "Original",
+            "brand": "Ghost",
+            "img": "https://drinkghost.com/cdn/shop/files/OGFront_b5090f47-67f3-4a61-9c9d-43229be0709c_700x.webp?v=1756221881",
+            "scores": [7, 1, 6.9, 7]
+          },
+          {
+            "id": 1777003296892,
+            "name": "Blue Raspberry",
+            "brand": "Sparkling Ice Caffine",
+            "img": "https://d3koznjjgilbyx.cloudfront.net/lowesfoods/product_images/0001657195384.jpg",
+            "scores": [5.3, 7.2, 6.8, 6.9]
+          },
+          {
+            "id": 1777003842931,
+            "name": "Black Raspberry",
+            "brand": "Sparking Ice Caffine",
+            "img": "https://www.sparklingice.com/wp-content/uploads/2025/12/Black-Raspberry-Caffeine.webp",
+            "scores": [5, 7.7, 7.1, 7.2]
+          },
+          {
+            "id": 1777003991171,
+            "name": "Cherry Slush",
+            "brand": "Alani",
+            "img": "https://www.alaninu.com/cdn/shop/files/energy_1serve_cherryslush_web_600x.png?v=1691680468",
+            "scores": [8, 7.1, 8.4, 8.1]
+          },
+          {
+            "id": 1777004082776,
+            "name": "Alani",
+            "brand": "Orange Kiss",
+            "img": "https://www.alaninu.com/cdn/shop/files/Orange_Kiss_Energy-ProductFrontV2_600x.png?v=1708990699",
+            "scores": [8.9, 7.2, 6.8, 7.3]
+          },
+          {
+            "id": 1777004143878,
+            "name": "Ghost",
+            "brand": "Orange Cream",
+            "img": "https://bevmo.com/cdn/shop/files/40ea375d-fc4a-4a2e-9114-202e1a757eb1.png?v=1773692690&width=1445",
+            "scores": [10, 7.8, 7.2, 7.1]
+          },
+          {
+            "id": 1777004214254,
+            "name": "Ghost ",
+            "brand": "Swedish Fish",
+            "img": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5oLvfx8tXmodeYiK8B2miCcpsgwdcGCM_1w&s",
+            "scores": [8, 9.8, 7.9, 8.2]
+          },
+          {
+            "id": 1777004270888,
+            "name": "Ghost",
+            "brand": "Warhead Sour Watermelon",
+            "img": "https://drinkghost.com/cdn/shop/files/WarheadsSWFront_700x.webp?v=1744834631",
+            "scores": [10, 9.4, 7.4, 7.8]
+          },
+          {
+            "id": 1777004424991,
+            "name": "Alani",
+            "brand": "Peach",
+            "img": "https://www.alaninu.com/cdn/shop/files/energy_1serve_Peach_web_1200x.png?v=1691680844",
+            "scores": [7.6, 9.5, 6.3, 6.5]
+          },
+          {
+            "id": 1777004485548,
+            "name": "Alani",
+            "brand": "Strawberry Sunrise",
+            "img": "https://www.alaninu.com/cdn/shop/files/Updated_new_Strawberry_Sunrise_PDP_600x.png?v=1738186829",
+            "scores": [9.6, 7.8, 8.7, 8.4]
+          },
+          {
+            "id": 1777004571034,
+            "name": "Strawbango",
+            "brand": "Ghost",
+            "img": "https://drinkghost.com/cdn/shop/files/StrawbangoFront.webp?v=1744833958&width=1200",
+            "scores": [10, 8.3, 8.1, 8.1]
+          },
+          {
+            "id": 1777004814605,
+            "name": "Sour Patch Kids Blue Raspberry",
+            "brand": "Ghost",
+            "img": "https://i5.walmartimages.com/seo/GHOST-ENERGY-Zero-Sugars-Energy-Drink-SOUR-PATCH-KIDS-Blue-Raspberry-16-fl-oz-Can_aba4647d-f190-4a7c-af4b-8fe63466b970.a2285526e4a5cb7dda2b82476e8d7f3b.png?odnHeight=768&odnWidth=768&odnBg=FFFFFF",
+            "scores": [10, 8.2, 8.6, 8.5]
+          },
+          {
+            "id": 1777004864824,
+            "name": "Sour Patch Kids Redberry",
+            "brand": "Ghost",
+            "img": "https://www.happysliquor.com/cdn/shop/files/GHOST_ENERGY_SPK_REDBERRY_1242x1674_b8fabdeb-7851-41ec-af2a-7442617c658c.webp?v=1742326242",
+            "scores": [10, 9.1, 8.6, 8.8]
+          },
+          {
+            "id": 1777004945135,
+            "name": "Welch's Grape-Cran",
+            "brand": "Ghost",
+            "img": "https://drinkghost.com/cdn/shop/files/WelchsGrapeCran_700x.webp?v=1765816503",
+            "scores": [10, 8.3, 8.7, 8.4]
+          }
+        ];
+
+        let localDrinks = JSON.parse(localStorage.getItem('energyDrinks')) || [];
+        let drinks = [];
+        
+        function mergeDrinks() {
+            drinks = [...PUBLIC_DRINKS];
+            localDrinks.forEach(ld => {
+                if (!drinks.find(pd => pd.id === ld.id)) {
+                    drinks.push(ld);
+                }
+            });
+        }
+
+        let activeComparison = [];
 
         const ctx = document.getElementById('radarChart').getContext('2d');
         let radarChart = new Chart(ctx, {
@@ -264,14 +518,29 @@
 
             if (!drink.name) return alert("Enter a name!");
 
-            drinks.push(drink);
-            localStorage.setItem('energyDrinks', JSON.stringify(drinks));
+            localDrinks.push(drink);
+            localStorage.setItem('energyDrinks', JSON.stringify(localDrinks));
             renderGrid();
             
             // Reset form
             document.getElementById('name').value = '';
             document.getElementById('brand').value = '';
             document.getElementById('imgUrl').value = '';
+        }
+
+        function deleteDrink(id, event) {
+            event.stopPropagation();
+            if(!confirm("Delete this rating?")) return;
+            
+            // Remove from local storage
+            localDrinks = localDrinks.filter(d => d.id !== id);
+            localStorage.setItem('energyDrinks', JSON.stringify(localDrinks));
+            
+            // Remove from active comparison
+            activeComparison = activeComparison.filter(aid => aid !== id);
+            
+            renderGrid();
+            updateChart();
         }
 
         function toggleComparison(id) {
@@ -307,6 +576,8 @@
         }
 
         function renderGrid() {
+            mergeDrinks();
+            updateDashboard();
             const grid = document.getElementById('drinkGrid');
             const searchText = document.getElementById('filterText').value.toLowerCase();
             const sortBy = document.getElementById('sortBy').value;
@@ -327,6 +598,7 @@
                      onclick="toggleComparison(${drink.id})">
                     <img src="${drink.img}" class="drink-img" onerror="this.src='https://via.placeholder.com/250x200?text=Error+Loading'">
                     <div class="drink-info">
+                        ${!PUBLIC_DRINKS.find(pd => pd.id === drink.id) ? `<button class="delete-btn" onclick="deleteDrink(${drink.id}, event)">Delete</button>` : ''}
                         <p>${drink.brand}</p>
                         <h3>${drink.name}</h3>
                         <div class="score-pill">${drink.scores[3]}/10 OVERALL</div>
@@ -335,8 +607,48 @@
             `).join('');
         }
 
+        function updateDashboard() {
+            if (drinks.length === 0) return;
+
+            // 1. Total Drinks
+            document.getElementById('stat-total').textContent = drinks.length;
+
+            // 2. Average Rating
+            const avg = drinks.reduce((acc, d) => acc + d.scores[3], 0) / drinks.length;
+            document.getElementById('stat-avg').textContent = avg.toFixed(1);
+
+            // 3. Top Brand (Most Rated)
+            const brandCounts = {};
+            drinks.forEach(d => {
+                const b = d.brand.trim();
+                brandCounts[b] = (brandCounts[b] || 0) + 1;
+            });
+            const topBrand = Object.keys(brandCounts).reduce((a, b) => brandCounts[a] > brandCounts[b] ? a : b);
+            document.getElementById('stat-brand').textContent = topBrand;
+
+            // 4. Hall of Fame (Highest Rated)
+            const hof = [...drinks].sort((a, b) => b.scores[3] - a.scores[3])[0];
+            document.getElementById('hof-img').src = hof.img;
+            document.getElementById('hof-brand').textContent = hof.brand;
+            document.getElementById('hof-name').textContent = hof.name;
+            document.getElementById('hof-score').textContent = hof.scores[3].toFixed(1) + "/10";
+        }
+
+        function toggleExport() {
+            const box = document.getElementById('exportBox');
+            const content = document.getElementById('exportContent');
+            if (box.style.display === 'block') {
+                box.style.display = 'none';
+            } else {
+                box.style.display = 'block';
+                content.textContent = JSON.stringify(drinks, null, 2);
+            }
+        }
+
         // Initial render
         renderGrid();
     </script>
+</body>
+</html>
 </body>
 </html>

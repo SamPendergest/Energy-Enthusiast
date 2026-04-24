@@ -85,6 +85,14 @@ Changes to the code will be deployed after being committed and pushed to the rep
 
 ---
 
+## Current Status (April 2026)
+
+- **Public Vault Integrated:** Ratings are now "baked" into the `index.html` file within a `PUBLIC_DRINKS` constant. This ensures visitors see curated content immediately.
+- **Hybrid Storage:** The app now merges `PUBLIC_DRINKS` with `localStorage` (localDrinks), allowing the owner to add new ratings in the browser that persist locally.
+- **Deployment:** The site is configured for GitHub Pages and is live at `https://sampendergest.github.io/Energy-Enthusiast/`.
+
+---
+
 ## Objective
 
 The goal is to produce a functional, simple, and reliable website that can be successfully deployed and accessed via GitHub Pages.
