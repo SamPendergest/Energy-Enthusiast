@@ -297,7 +297,18 @@
         function renderGrid() {
             mergeDrinks();
             const grid = document.getElementById('drinkGrid');
-            grid.innerHTML = drinks.filter(d => d.name.toLowerCase().includes(document.getElementById('filterText').value.toLowerCase())).map(d => `
+            const filter = document.getElementById('filterText').value.toLowerCase();
+            const sortElement = document.getElementById('sortOrder');
+            const sort = sortElement ? sortElement.value : 'top';
+
+            let filtered = drinks.filter(d => d.name.toLowerCase().includes(filter) || d.brand.toLowerCase().includes(filter));
+
+            if (sort === 'top') filtered.sort((a, b) => b.scores[3] - a.scores[3]);
+            else if (sort === 'brand') filtered.sort((a, b) => a.brand.localeCompare(b.brand));
+            else if (sort === 'name') filtered.sort((a, b) => a.name.localeCompare(b.name));
+            else if (sort === 'newest') filtered.sort((a, b) => b.id - a.id);
+
+            grid.innerHTML = filtered.map(d => `
                 <div class="drink-card ${activeComparison.includes(d.id) ? 'active' : ''}" onclick="toggleComparison(${d.id})">
                     <img src="${d.img}" class="drink-img">
                     <div class="drink-info">
