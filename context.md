@@ -1,4 +1,4 @@
-﻿# Website Build Context (The Rush Rater)
+# Website Build Context (The Rush Rater)
 
 ## Project Overview
 A personal energy drink rating vault built for a university class, developed with assistance from Google Gemini.
@@ -10,19 +10,16 @@ A personal energy drink rating vault built for a university class, developed wit
 
 ## Core Architecture
 - **Single-File Design:** `index.html` contains all HTML, CSS, and JS.
-- **Multi-Page Sidebar UI:** A fixed sidebar handles navigation between Home, Vault, and About sections using JavaScript transitions.
+- **Multi-Page Sidebar UI:** A fixed sidebar handles navigation between Home, Vault, Suggestions, and About sections using JavaScript transitions.
 - **The Vault Logic:** 
-  - Ratings are stored in `PUBLIC_DRINKS` (baked-in) and `localStorage` (personal).
-  - Features a Radar Chart for drink comparison.
-  - Dashboard tracks Total Rated, Average Rating, and Top Brand.
+  - Ratings are stored permanently in the `PUBLIC_DRINKS` array.
+  - Features a Radar Chart for drink comparison (up to 3 drinks).
+  - Dashboard tracks Total Rated, Average Rating, Top Brand, and Hall of Fame.
+- **Suggestions Page:** A form that allows users to send drink suggestions via email (`mailto:`).
 
-## Branding & Identity
-- **Title:** The Rush Rater (Vibrant Red)
-- **Subtitle:** The Energy Enthusiast. Caffeine for the Cultured. A dedicated space for the science, flavor, and design of energy.
-- **About Page:** Personal bio for Sam Pendergest, documenting the university project and Gemini collaboration.
-
-## Status (End of Session - April 2026)
-- Navigation is stable and bug-free.
-- "Top Brand" stat calculation is fixed.
-- Branding and color scheme (Vibrant Red accent) are applied throughout.
-- Repository is clean of unrelated Otter.ai notes.
+## Status (End of Session - April 28, 2026)
+- **Suggestions Page:** Added a new page for users to submit drink recommendations.
+- **Edit Feature:** Successfully implemented to update ratings and then removed from the UI as requested to maintain a clean interface.
+- **Ratings Update:** All drink ratings in `PUBLIC_DRINKS` have been updated to the latest values as of today.
+- **File Structure:** `index.html` and `context.md` are correctly located in the root directory for GitHub Pages deployment.
+- **Deployment:** Live site is stable and reflecting all permanent changes.
