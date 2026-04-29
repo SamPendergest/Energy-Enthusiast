@@ -303,6 +303,20 @@
             document.getElementById("hof-score").textContent = hof.scores[3] + "/10";
         }
 
+        function submitSuggestion() {
+            const name = document.getElementById('suggest-name').value;
+            const drink = document.getElementById('suggest-drink').value;
+            const brand = document.getElementById('suggest-brand').value;
+            const notes = document.getElementById('suggest-notes').value;
+
+            if (!drink || !brand) return alert("Please provide at least the drink name and brand!");
+
+            const subject = encodeURIComponent(`Drink Suggestion: ${drink} (${brand})`);
+            const body = encodeURIComponent(`Hey Sam,\n\nI have a suggestion for The Rush Rater!\n\nName: ${name}\nDrink: ${drink}\nBrand: ${brand}\nWhy: ${notes}`);
+            
+            window.location.href = `mailto:sjpendergest@gmail.com?subject=${subject}&body=${body}`;
+        }
+
         function showPage(id) {
             const cur = document.querySelector('.page-section.active');
             const next = document.getElementById(id);
